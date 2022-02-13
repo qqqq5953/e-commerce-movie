@@ -1,18 +1,28 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <!-- <div class="container-fluid"></div> -->
+  <!-- <div class="position-absolute left-0 right-0 w-100" style="z-index: 1">
+  </div> -->
+  <Navbar></Navbar>
+  <router-view></router-view>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import Navbar from '@/components/Navbar.vue';
+import sortData from '@/methods/sortData';
+import emitter from '@/methods/emitter';
 
 export default {
-  name: 'Home',
   components: {
-    HelloWorld
+    Navbar
+  },
+  provide() {
+    return {
+      sortData,
+      emitter
+    };
+  },
+  created() {
+    // console.log('movieID', this.movieID);
   }
-}
+};
 </script>
