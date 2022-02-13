@@ -128,7 +128,7 @@ export default {
       // 防止跳回首頁會更新資料
       if (this.$route.name === 'UserProducts') {
         this.genrePassIn = newGenre.toLowerCase();
-        this.getProducts();
+        this.getAllProducts();
       }
     }
   },
@@ -164,16 +164,7 @@ export default {
       }
       this.lastPage = this.slicePages[this.slicePages.length - 1];
     },
-    setPagination(page = 1) {
-      this.currentPage = page;
-
-      this.totalPages = Math.ceil(this.allProducts.length / this.perPage);
-      const startPage = this.currentPage * this.perPage - this.perPage;
-      const endPage = startPage + this.perPage;
-
-      this.products = this.allProducts.slice(startPage, endPage);
-    },
-    async getProducts() {
+    async getAllProducts() {
       this.isLoading = true;
 
       // api
@@ -182,9 +173,24 @@ export default {
         console.log(err);
       });
 
+      // 根據不同 Genre 決定 allProducts 資料內容
+      this.allProducts = this.classifyGenre(response);
+
+      // 照熱門度分類
+      this.allProducts = this.sortData(this.allProducts, 'content');
+
+      // 設定分頁
+      this.setPagination();
+
+      this.isLoading = false;
+      console.log('getAllProducts', response.data);
+    },
+    classifyGenre(response) {
+      let tempProduct = [];
+
       if (this.genrePassIn === 'nowplaying') {
         // 首頁傳來為 NowPlaying
-        this.allProducts = response.data.products.filter((item) => {
+        tempProduct = response.data.products.filter((item) => {
           const genre = item.category.split('|')[1];
           return genre === 'nowplaying';
         });
@@ -192,7 +198,7 @@ export default {
         console.log('nowplaying', this.allProducts);
       } else if (this.genrePassIn === 'upcoming') {
         // 首頁傳來為 Upcoming
-        this.allProducts = response.data.products.filter((item) => {
+        tempProduct = response.data.products.filter((item) => {
           const genre = item.category.split('|')[1];
           return genre === 'upcoming';
         });
@@ -200,7 +206,7 @@ export default {
         console.log('upcoming', this.allProducts);
       } else {
         // see all results
-        this.allProducts = response.data.products.filter((item) => {
+        tempProduct = response.data.products.filter((item) => {
           return item.title
             .split('-')
             .join(' ')
@@ -209,12 +215,17 @@ export default {
         });
       }
 
-      this.setPagination();
+      return tempProduct;
+    },
+    setPagination(page = 1) {
+      this.currentPage = page;
 
-      // this.allProducts.reverse();
+      // 設定總頁數、起訖頁
+      this.totalPages = Math.ceil(this.allProducts.length / this.perPage);
+      const startPage = this.currentPage * this.perPage - this.perPage;
+      const endPage = startPage + this.perPage;
 
-      this.isLoading = false;
-      console.log('res', response.data);
+      this.products = this.allProducts.slice(startPage, endPage);
     },
     getProductDetails(id) {
       this.$router.push({ name: 'Product', params: { productID: id } });
@@ -224,7 +235,7 @@ export default {
     window.scrollTo(0, -1000);
 
     this.genrePassIn = this.$route.params.genre;
-    this.getProducts();
+    this.getAllProducts();
   }
 };
 </script>

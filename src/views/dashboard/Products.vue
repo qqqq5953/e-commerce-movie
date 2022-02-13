@@ -13,6 +13,9 @@
     <button type="button" class="btn btn-warning" @click="deleteAllProducts">
       快速刪除全部產品
     </button>
+    <button type="button" class="btn btn-info" @click="getAllProducts">
+      查看全部產品
+    </button>
   </div>
   <Pagination
     :pages="pagination"
@@ -139,10 +142,11 @@ export default {
       });
 
       // 依照熱門度排序 取前 20
-      this.top20nowPlaying = this.sortData(filterDate, 'popularity').slice(
-        0,
-        20
-      );
+      // this.top20nowPlaying = this.sortData(filterDate, 'popularity').slice(
+      //   0,
+      //   20
+      // );
+      this.top20nowPlaying = filterDate.slice(0, 20);
 
       // 暫時 for 快速新增
       const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product`;

@@ -4,6 +4,13 @@
     <div class="container py-5">
       <div class="row justify-content-center mb-5">
         <div class="col-8">
+          <PaginationForResults
+            :totalPages="totalPages"
+            :currentPage="currentPage"
+            @change-page="setPagination"
+            @previous-page="setPagination"
+            @next-page="setPagination"
+          ></PaginationForResults>
           <header>
             <div class="d-flex align-items-center">
               <!-- <i class="bi bi-film text-warning me-3 fs-4"></i> -->
@@ -42,6 +49,10 @@
                             item.content.split('|')[2]
                           }}</small>
                           |
+                          <small class="d-inline-block me-2">{{
+                            item.content.split('|')[0]
+                          }}</small>
+                          |
                           <small class="ms-2 d-inline-block"
                             >Popularity:
                             <span class="">{{
@@ -74,26 +85,29 @@
           </ul>
         </div>
       </div>
-      <Pagination
+      <!-- <Pagination
         :pages="pagination"
         @change-page="getProducts"
         @previous-page="getProducts"
         @next-page="getProducts"
-      ></Pagination>
+      ></Pagination> -->
     </div>
   </div>
 </template>
 
 <script>
-import Pagination from '@/components/Pagination.vue';
+// import Pagination from '@/components/Pagination.vue';
+import PaginationForResults from '@/components/PaginationForResults.vue';
 
 export default {
   components: {
-    Pagination
+    // Pagination,
+    PaginationForResults
   },
   inject: ['emitter', 'sortData'],
   data() {
     return {
+      allProducts: [],
       products: [],
       cart: [],
       status: {
@@ -102,7 +116,12 @@ export default {
       isLoading: false,
       baseImageUrl: 'https://image.tmdb.org/t/p/w200',
       key: '7bbe6005cfda593dc21cceb93eaf9a8e',
-      pagination: {}
+      pagination: {},
+      // pagination
+      slicePages: undefined,
+      totalPages: undefined,
+      currentPage: 1,
+      perPage: 3
       // genrePassIn: ''
     };
   },
@@ -126,6 +145,28 @@ export default {
       this.isLoading = false;
       console.log('res', response.data);
     },
+    async getAllProducts() {
+      // api
+      const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/products/all`;
+      const response = await this.$http.get(api).catch((err) => {
+        console.log(err);
+      });
+
+      // 儲存資料並照熱門度分類
+      this.allProducts = response.data.products;
+      this.allProducts = this.sortData(this.allProducts, 'content');
+      this.setPagination();
+    },
+    setPagination(page = 1) {
+      this.currentPage = page;
+
+      // 設定總頁數、起訖頁
+      this.totalPages = Math.ceil(this.allProducts.length / this.perPage);
+      const startPage = this.currentPage * this.perPage - this.perPage;
+      const endPage = startPage + this.perPage;
+
+      this.products = this.allProducts.slice(startPage, endPage);
+    },
     getProductDetails(id) {
       this.$router.push({ name: 'Product', params: { productID: id } });
     }
@@ -133,7 +174,7 @@ export default {
   created() {
     window.scrollTo(0, -1000);
 
-    this.getProducts();
+    this.getAllProducts();
   }
 };
 </script>
