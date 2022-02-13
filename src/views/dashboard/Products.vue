@@ -10,7 +10,7 @@
     <button type="button" class="btn btn-danger" @click="getUpcoming">
       快速新增 upComing
     </button>
-    <button type="button" class="btn btn-danger" @click="getAllProducts">
+    <button type="button" class="btn btn-warning" @click="deleteAllProducts">
       快速刪除全部產品
     </button>
   </div>
@@ -108,7 +108,9 @@ export default {
       language: 'en-US',
       region: 'US',
       baseImageUrl: 'https://image.tmdb.org/t/p/w300',
-      key: '7bbe6005cfda593dc21cceb93eaf9a8e'
+      key: '7bbe6005cfda593dc21cceb93eaf9a8e',
+      // temp
+      allProducts: []
     };
   },
   methods: {
@@ -315,24 +317,28 @@ export default {
         console.log(err);
       }
     },
-    // async getAllProducts() {
-    //   // api
-    //   const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/products/all`;
-    //   const response = await this.$http.get(api).catch((err) => {
-    //     console.log(err);
-    //   });
-    //   console.log('res', response.data);
+    async getAllProducts() {
+      // api
+      const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/products/all`;
+      const response = await this.$http.get(api).catch((err) => {
+        console.log(err);
+      });
+      console.log('getAllProducts', response.data);
 
-    //   // 儲存資料
-    //   this.deleteAllProducts(response.data.products);
-    // },
-    // async deleteAllProducts(items) {
-    //   for (let i = 0; i < items.length; i++) {
-    //     const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${items[i].id}`;
-    //     const response = await this.$http.delete(api);
-    //     console.log('deleteAllProducts', response.data);
-    //   }
-    // },
+      // 儲存資料
+      this.allProducts = response.data.products;
+    },
+    async deleteAllProducts() {
+      await this.getAllProducts();
+
+      for (let i = 0; i < this.allProducts.length; i++) {
+        const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${this.allProducts[i].id}`;
+        const response = await this.$http.delete(api);
+        console.log('deleteAllProducts', response.data);
+      }
+
+      await this.getProducts();
+    },
     async deleteProduct(item) {
       try {
         // axios
