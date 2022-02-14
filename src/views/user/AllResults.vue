@@ -1,22 +1,27 @@
 <template>
   <Loading :active="isLoading"></Loading>
-  <div class="bg-light">
+  <div class="bg-dark">
     <div class="container py-5">
-      <h2>
-        Displaying {{ allProducts.length }} results for: {{ genrePassIn }}
-      </h2>
-
-      <PaginationForResults
-        :totalPages="totalPages"
-        :currentPage="currentPage"
-        @change-page="setPagination"
-        @previous-page="setPagination"
-        @next-page="setPagination"
-      ></PaginationForResults>
       <div class="row justify-content-center">
-        <div class="col-8">
-          <ul class="list-unstyled">
-            <li class="mb-5" v-for="item in products" :key="item.id">
+        <div class="col-9">
+          <PaginationForResults
+            :totalPages="totalPages"
+            :currentPage="currentPage"
+            @change-page="setPagination"
+            @previous-page="setPagination"
+            @next-page="setPagination"
+          ></PaginationForResults>
+          <header>
+            <div class="d-flex align-items-center">
+              <i class="bi bi-film text-warning me-3 fs-3"></i>
+              <h2 class="h1 mb-0 text-white">
+                {{ allProducts.length }} results for:
+                <span class="text-warning">{{ genrePassIn }}</span>
+              </h2>
+            </div>
+          </header>
+          <ul class="mt-4 list-unstyled">
+            <li class="mb-4" v-for="item in products" :key="item.id">
               <a
                 href="#"
                 class="text-decoration-none d-block"
@@ -30,13 +35,7 @@
                           <img
                             v-if="item.imageUrl[0]"
                             :src="item.imageUrl[0]"
-                            class="card-img-top img-fluid d-block"
-                            style="
-                              object-fit: cover;
-                              object-position: center center;
-                              aspect-ratio: 2 / 3;
-                              max-height: 250px;
-                            "
+                            class="card-img-top card-img-top-adjusted img-fluid d-block"
                             :alt="item.title"
                           />
                         </div>
@@ -56,10 +55,10 @@
                           >
                         </div>
                       </div>
-                      <div class="row mt-4">
+                      <div class="row mt-3">
                         <div class="col-12">
                           <div class="card-text d-flex flex-column">
-                            <p>{{ item.description }}</p>
+                            <p class="lh-sm">{{ item.description }}</p>
 
                             <div class="text-end mt-auto px-2">
                               <span> &#171; see more &#187;</span>
@@ -95,7 +94,7 @@ export default {
   components: {
     PaginationForResults
   },
-  inject: ['emitter'],
+  inject: ['emitter', 'sortData'],
   data() {
     return {
       allProducts: [],
@@ -126,7 +125,7 @@ export default {
       const newGenre = newVal;
 
       // 防止跳回首頁會更新資料
-      if (this.$route.name === 'UserProducts') {
+      if (this.$route.name === 'AllResults') {
         this.genrePassIn = newGenre.toLowerCase();
         this.getAllProducts();
       }
@@ -245,11 +244,13 @@ export default {
   position: relative;
   overflow: hidden;
   border-radius: 10px;
-  box-shadow: 0px 0px 120px -20px rgba(0, 0, 0, 0.5);
-  // box-shadow: 0px 0px 80px -25px rgba(0, 0, 0, 0.5);
+  // box-shadow: 0px 0px 120px -20px rgba(0, 0, 0, 0.5);
+  box-shadow: -6px 0px 50px -30px rgba(255, 255, 255, 0.8);
+
   &:hover {
     transform: scale(1.02);
-    box-shadow: 0px 0px 80px -25px rgba(0, 0, 0, 0.5);
+    // box-shadow: 0px 0px 80px -25px rgba(0, 0, 0, 0.5);
+    box-shadow: -6px 0px 55px -30px rgba(255, 255, 255, 1);
     transition: all 0.4s;
   }
 
@@ -260,12 +261,17 @@ export default {
     width: 100%;
     height: 100%;
     z-index: 2;
+
+    .card-img-top-adjusted {
+      object-fit: cover;
+      object-position: center center;
+      aspect-ratio: 2 / 3;
+      max-height: 250px;
+    }
   }
 
   .backdrop_image {
     background-repeat: no-repeat;
-    background-position: center center;
-    background-position: -100% 10% !important;
     background-size: cover;
     position: absolute;
     top: 0;
@@ -276,11 +282,18 @@ export default {
   }
 }
 
-.card-text p {
-  display: -webkit-box;
-  // max-width: 90%;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.card-text {
+  p {
+    display: -webkit-box;
+    // max-width: 90%;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  span:hover {
+    color: #f0ad4e;
+    font-weight: bold;
+  }
 }
 </style>

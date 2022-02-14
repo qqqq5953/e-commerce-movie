@@ -1,9 +1,9 @@
 <template>
   <Loading :active="isLoading"></Loading>
-  <div class="bg-light">
+  <div class="bg-dark">
     <div class="container py-5">
       <div class="row justify-content-center mb-5">
-        <div class="col-8">
+        <div class="col-9">
           <PaginationForResults
             :totalPages="totalPages"
             :currentPage="currentPage"
@@ -14,10 +14,10 @@
           <header>
             <div class="d-flex align-items-center">
               <!-- <i class="bi bi-film text-warning me-3 fs-4"></i> -->
-              <i class="bi bi-play-btn-fill text-warning me-3 fs-3"></i>
+              <i class="bi bi-play-btn-fill text-warning me-3 fs-2"></i>
               <!-- <i class="bi bi-play-circle-fill text-warning me-3 fs-3"></i> -->
               <!-- <i class="bi bi-badge-hd-fill text-warning me-3 fs-2"></i> -->
-              <h2 class="h1 mb-0">Our Movies</h2>
+              <h2 class="h1 mb-0 text-white">Our Movies</h2>
             </div>
           </header>
           <ul class="mt-4 list-unstyled">
@@ -49,10 +49,6 @@
                             item.content.split('|')[2]
                           }}</small>
                           |
-                          <small class="d-inline-block me-2">{{
-                            item.content.split('|')[0]
-                          }}</small>
-                          |
                           <small class="ms-2 d-inline-block"
                             >Popularity:
                             <span class="">{{
@@ -62,10 +58,10 @@
                         </div>
                       </div>
                       <!-- card-body -->
-                      <div class="row mt-4">
+                      <div class="row mt-3">
                         <div class="col-12">
                           <div class="card-text d-flex flex-column">
-                            <p>{{ item.description }}</p>
+                            <p class="lh-sm">{{ item.description }}</p>
 
                             <div class="text-end mt-auto px-2">
                               <span> &#171; see more &#187;</span>
@@ -185,10 +181,12 @@ export default {
   overflow: hidden;
   border-radius: 10px;
   box-shadow: 0px 0px 120px -20px rgba(0, 0, 0, 0.5);
-  // box-shadow: 0px 0px 80px -25px rgba(0, 0, 0, 0.5);
+  box-shadow: -6px 0px 50px -30px rgba(255, 255, 255, 0.8);
+
   &:hover {
     transform: scale(1.02);
-    box-shadow: 0px 0px 80px -25px rgba(0, 0, 0, 0.5);
+    // box-shadow: 0px 0px 80px -25px rgba(0, 0, 0, 0.5);
+    box-shadow: -6px 0px 55px -30px rgba(255, 255, 255, 1);
     transition: all 0.4s;
   }
 

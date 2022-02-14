@@ -2,9 +2,9 @@
   <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center align-items-center">
       <!-- 上一頁 -->
-      <li class="page-item" :class="{ disabled: currentPage === 1 }">
+      <li class="page-item pre-btn" :class="{ disabled: currentPage === 1 }">
         <a
-          class="page-link"
+          class="page-link bg-dark"
           href="#"
           @click.prevent="onPreviousPage(currentPage)"
           aria-label="Previous"
@@ -28,7 +28,8 @@
             :key="page"
           >
             <a
-              class="page-link border"
+              class="page-link bg-dark text-white"
+              :class="{ 'border border-white': page === currentPage }"
               href="#"
               @click.prevent="onChangePage(page)"
               >{{ page }}</a
@@ -57,9 +58,12 @@
       </li> -->
 
       <!-- 下一頁 -->
-      <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+      <li
+        class="page-item next-btn"
+        :class="{ disabled: currentPage === totalPages }"
+      >
         <a
-          class="page-link"
+          class="page-link bg-dark"
           href="#"
           @click.prevent="onNextPage(currentPage)"
           aria-label="Next"
@@ -104,3 +108,19 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.page-item:not(.disabled) .page-link {
+  color: white !important;
+}
+
+// 上、下一頁的focus狀態
+:focus:is(.pre-btn .page-link, .next-btn .page-link) {
+  outline: 2px solid white !important;
+}
+
+// 上、下一頁的 disabled focus狀態
+:focus:is(.pre-btn.disabled .page-link, .next-btn.disabled .page-link) {
+  outline: 2px solid #919aa1 !important;
+}
+</style>
