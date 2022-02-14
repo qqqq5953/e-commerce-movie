@@ -10,18 +10,29 @@
     ></div>
     <div class="position-absolute top-0 bottom-0 w-100">
       <div
-        class="row align-items-center m-auto h-100"
+        class="d-flex align-items-center m-auto h-100"
         style="background: rgba(255, 255, 255, 0.2)"
       >
-        <div class="col-5">
-          <h2
-            class="display-5 p-4 mb-0 ms-3 text-white"
-            style="background: rgba(0, 0, 0, 0.5)"
-          >
-            Offer
-            <span class="text-warning">unequaled entertainment experience</span>
-            that fits your lifestyle.
-          </h2>
+        <div class="" style="width: 43%">
+          <div class="mb-0 ms-4 p-4" style="background: rgba(0, 0, 0, 0.45)">
+            <h2 class="display-4 text-white">
+              <span class="d-block">Offer</span>
+              <span>a variety of</span>
+              <span class="text-warning"> latest movies </span>
+              around the globe
+            </h2>
+            <hr class="my-0 text-white" />
+            <div class="mt-3">
+              <router-link
+                :to="{ name: 'AllProducts' }"
+                class="btn btn-warning fs-5 w-100"
+              >
+                <span>Pick a movie now</span>
+                <i class="bi bi-arrow-right ms-2"></i>
+              </router-link>
+              <!-- <a href="#" type="button" class="btn btn-warning fs-5 w-100"> </a> -->
+            </div>
+          </div>
         </div>
       </div>
     </div>

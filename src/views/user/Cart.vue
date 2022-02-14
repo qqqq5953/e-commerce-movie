@@ -240,7 +240,7 @@ export default {
     return {
       cart: [],
       discountTotal: '',
-      couponCode: 'fifty',
+      couponCode: 'CMDBTEN',
       status: {
         loadingItemsID: ''
       },
