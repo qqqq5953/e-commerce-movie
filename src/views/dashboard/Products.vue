@@ -151,13 +151,13 @@ export default {
       // 暫時 for 快速新增
       const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product`;
 
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 2; i++) {
         this.tempProduct = {};
         this.tempProduct.title = this.top20nowPlaying[i].title;
         this.tempProduct.category = 'movie|nowplaying';
-        this.tempProduct.origin_price = 330;
-        this.tempProduct.price = 300;
-        this.tempProduct.unit = '月';
+        this.tempProduct.origin_price = 1.99;
+        this.tempProduct.price = 0.99;
+        this.tempProduct.unit = 'week';
         this.tempProduct.description = this.top20nowPlaying[i].overview;
         this.tempProduct.is_enabled = true;
         this.tempProduct.imageUrl = [
@@ -217,13 +217,13 @@ export default {
       // 暫時 for 快速新增
       const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product`;
 
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 2; i++) {
         this.tempProduct = {};
         this.tempProduct.title = this.top20upComing[i].title;
         this.tempProduct.category = 'movie|upcoming';
-        this.tempProduct.origin_price = 330;
-        this.tempProduct.price = 300;
-        this.tempProduct.unit = '月';
+        this.tempProduct.origin_price = 1.99;
+        this.tempProduct.price = 0.99;
+        this.tempProduct.unit = 'week';
         this.tempProduct.description = this.top20upComing[i].overview;
         this.tempProduct.is_enabled = true;
         this.tempProduct.imageUrl = [

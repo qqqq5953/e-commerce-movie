@@ -55,7 +55,24 @@
               </div>
 
               <section class="col-7 d-flex flex-column">
-                <h2 class="display-5 text-white mb-2">{{ title }}</h2>
+                <div
+                  class="d-flex align-items-start justify-content-between mb-2"
+                >
+                  <h2 class="display-5 text-white mb-0">{{ title }}</h2>
+                  <a
+                    href="#"
+                    type="button"
+                    class="text-white"
+                    @click.prevent="addProductToList"
+                  >
+                    <i
+                      class="bi bi-bookmark-plus fs-3"
+                      v-if="!status.isProductInList"
+                    ></i>
+                    <i class="bi bi-bookmark-check-fill fs-3" v-else></i>
+                  </a>
+                </div>
+
                 <h3 class="h6 text-white mb-1">
                   Original title:
                   <span class="fw-normal">{{ originalTitle }}</span>
@@ -80,58 +97,70 @@
                   >
                 </div>
                 <!-- price -->
-                <div
+                <!-- <div class="row mb-2 mt-auto">
+                  <div class="col" v-if="isNowOrUpcoming === 'nowplaying'">
+                    <span>Rent:</span>
+                    <span class="h3 text-muted ms-2 mb-0">${{ price }}</span>
+                  </div>
+                  <div class="col" v-if="isNowOrUpcoming === 'nowplaying'">
+                    <span>Subscribe:</span>
+                    <span class="h3 text-warning ms-2 mb-0">$9.99</span>
+                  </div>
+                </div> -->
+
+                <!-- <div
                   class="d-flex justify-content-between align-items-center ms-auto mt-auto mb-3"
-                  v-if="nowOrUpcoming === 'nowplaying'"
+                  v-if="isNowOrUpcoming === 'nowplaying'"
                 >
                   <span>Subscribe:</span>
-                  <span class="h3 text-danger ms-3">NT$330</span>
-                </div>
+                  <span class="h3 text-danger ms-3">USD${{ price }}</span>
+                </div> -->
                 <!-- PURCHASE or subscribe -->
                 <div
-                  class="row justify-content-between"
-                  :class="{ 'mt-auto': nowOrUpcoming === 'upcoming' }"
+                  class="row justify-content-between mt-auto flex-column-reverse flex-xl-row"
+                  :class="{ 'mt-auto': isNowOrUpcoming === 'upcoming' }"
                   role="group"
                 >
-                  <div class="col">
+                  <div
+                    class="col-12 col-xl-6"
+                    v-if="isNowOrUpcoming === 'nowplaying'"
+                  >
                     <button
                       type="button"
-                      class="btn btn-outline-light text-center fw-light rounded-3 w-100"
-                      :class="{
-                        active: status.isProductInList || status.isAdded
-                      }"
-                      @click="addProductToList"
+                      class="btn btn-outline-secondary text-center text-muted rounded-3 w-100"
+                      :disabled="status.loadingProductID === productID"
+                      @click="addProductToCart(idPassIn)"
                     >
                       <span
                         class="spinner-border spinner-grow-sm"
-                        v-if="status.watchlistProductID === productID"
-                      ></span>
-                      <span v-else>
-                        <i
-                          class="bi bi-bookmark-plus me-2"
-                          v-if="!status.isProductInList"
-                        ></i>
-                        <i class="bi bi-bookmark-check-fill me-2" v-else></i>
-                      </span>
-                      Watchlist
-                    </button>
-                  </div>
-                  <div class="col" v-if="nowOrUpcoming === 'nowplaying'">
-                    <button
-                      type="button"
-                      class="btn btn-outline-warning text-center text-warning rounded-3 w-100"
-                      :disabled="status.subscribeProductID === productID"
-                      @click="addProductToCart"
-                    >
-                      <span
-                        class="spinner-border spinner-grow-sm"
-                        v-if="status.subscribeProductID === productID"
+                        v-if="status.loadingProductID === productID"
                       ></span>
                       <i
-                        v-if="status.subscribeProductID !== productID"
+                        v-if="status.loadingProductID !== productID"
                         class="bi bi-arrow-right-circle me-2"
                       ></i>
-                      SUBSCRIBE
+                      RENT $0.99
+                    </button>
+                  </div>
+                  <div
+                    class="col-12 col-xl-6 mb-3 mb-xl-0"
+                    v-if="isNowOrUpcoming === 'nowplaying'"
+                  >
+                    <button
+                      type="button"
+                      class="btn btn-warning text-center border border-warning text-primary rounded-3 w-100"
+                      :disabled="status.loadingProductID === subscriptionID"
+                      @click="addProductToCart(subscriptionID)"
+                    >
+                      <span
+                        class="spinner-border spinner-grow-sm"
+                        v-if="status.loadingProductID === subscriptionID"
+                      ></span>
+                      <i
+                        v-if="status.loadingProductID !== subscriptionID"
+                        class="bi bi-hand-index-thumb me-2"
+                      ></i>
+                      SUBSCRIBE $9.99
                     </button>
                   </div>
                 </div>
@@ -148,7 +177,7 @@
                 <h4 class="h6 text-white text-end">popularity</h4>
                 <div class="text-end mt-auto">
                   <i class="bi bi-star-fill text-warning me-2"></i>
-                  <span>{{ popularity }}</span>
+                  <span>{{ parseFloat(popularity).toFixed(0) }}</span>
                 </div>
               </div>
               <!-- vote -->
@@ -275,8 +304,10 @@ export default {
       genres: [],
       overview: '',
       id: '',
+      subscriptionID: '-Mvs2RtAyjE8MVyiaJte',
       genre: '',
-      nowOrUpcoming: '',
+      isNowOrUpcoming: '',
+      price: '',
       language: 'en-US',
       videoType: {
         behindTheScenes: { type: 'Behind the Scenes', content: [] },
@@ -288,7 +319,7 @@ export default {
       },
       // add to Cart status
       status: {
-        subscribeProductID: '',
+        loadingProductID: '',
         watchlistProductID: '',
         isProductInList: ''
       }
@@ -325,14 +356,17 @@ export default {
         .catch((err) => console.log(err));
       console.log('getProductDetails', response);
 
-      // 產品在 TMDB api 中 的id
+      // 產品在 TMDB api 中的id
       this.id = response.data.product.content.split('|')[0];
+
+      // 產品在 TMDB api 中的id
+      this.price = response.data.product.price;
 
       // 產品屬於 movie 或 tv 類別
       this.genre = response.data.product.category.split('|')[0];
 
       // 產品屬於 nowplaying 或 Upcoming 類別
-      this.nowOrUpcoming = response.data.product.category.split('|')[1];
+      this.isNowOrUpcoming = response.data.product.category.split('|')[1];
 
       // 再透過 TMDB api 獲得更多產品資料
       await this.getData();
@@ -358,7 +392,7 @@ export default {
       // video 分類
       this.arrangeVideoType(response.data.videos.results);
 
-      // 預設呈現 trailers (因為 videoType.trailers.content[0].key 抓不到值)
+      // 預設呈現 trailers
       this.trailers = response.data.videos.results.filter((item) => {
         return item.type === 'Trailer';
       });
@@ -375,10 +409,6 @@ export default {
 
       this.runTime.hour = Math.floor(response.data.runtime / 60);
       this.runTime.minute = response.data.runtime % 60;
-      // this.arrangeVideoType(response.data.videos.results);
-      this.trailers = response.data.videos.results.filter((item) => {
-        return item.type === 'Trailer';
-      });
     },
     getTVDetail(response) {
       this.title = response.data.name;
@@ -406,15 +436,15 @@ export default {
         }
       });
     },
-    async addProductToCart() {
+    async addProductToCart(id) {
       // spinner on
-      this.status.subscribeProductID = this.idPassIn;
+      this.status.loadingProductID = id;
 
       // api
       const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/cart`;
 
       const requestBody = {
-        data: { product_id: this.idPassIn, qty: 1 }
+        data: { product_id: id, qty: 1 }
       };
 
       const response = await this.$http.post(api, requestBody).catch((err) => {
@@ -427,7 +457,7 @@ export default {
       this.emitter.emit('calculate-product-number', cartLength);
 
       // spinner off
-      this.status.subscribeProductID = '';
+      this.status.loadingProductID = '';
     },
     async checkProductStatus() {
       const api = `https://api.themoviedb.org/3/list/${this.list_id}/item_status?api_key=${this.key}&movie_id=${this.id}`;
@@ -527,8 +557,12 @@ export default {
   -webkit-backdrop-filter: blur(13.5px);
 }
 
-.btn-outline-warning:hover {
+:hover:is(.btn-outline-warning, .btn-outline-secondary) {
   color: #000 !important;
+}
+
+:hover:is(.btn-warning) {
+  color: #fff !important;
 }
 
 .more-video-list {
